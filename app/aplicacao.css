@@ -1,0 +1,654 @@
+/* ============================================================
+   IMPÉRIA ESTHÉTIQUE — camada de aplicação
+   Acesso, formulários, modais, estados de carga e de lista vazia.
+   Herda os tokens de globals.css.
+   ============================================================ */
+
+/* ------------------------------------------------ portal (login/onboarding) */
+
+.portal {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 26px;
+  min-height: 100dvh;
+  padding: 44px 20px;
+  background:
+    radial-gradient(900px 520px at 50% -8%, var(--gold-veil), transparent 70%),
+    var(--bg);
+}
+
+.portal-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.brand-mark {
+  display: block;
+  width: 44px;
+  height: 44px;
+  background: var(--gold-gradient);
+  border-radius: 13px;
+  box-shadow: 0 4px 14px #c8a15b59;
+}
+
+.brand-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.brand-name b {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text);
+}
+
+.brand-name small {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  color: var(--gold-tinta);
+}
+
+.brand-tagline {
+  margin: 0;
+  font-family: var(--font-script);
+  font-size: 16px;
+  color: var(--gold-tinta);
+}
+
+.portal-cartao {
+  width: min(410px, 100%);
+  padding: 30px 30px 26px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-alto);
+}
+
+.portal-cartao h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.portal-sub {
+  margin: 5px 0 20px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.portal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.portal-envio {
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+  padding: 11px 15px;
+}
+
+.portal-alternar {
+  display: block;
+  margin: 16px auto 0;
+}
+
+.portal-erro {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: var(--r-sm);
+}
+
+.portal-icone {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 14px;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border: 1px solid var(--gold-line);
+  border-radius: 13px;
+}
+
+.portal-confirmacao {
+  text-align: center;
+}
+
+.portal-confirmacao > svg {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  margin: 0 auto 14px;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border: 1px solid var(--gold-line);
+  border-radius: 50%;
+}
+
+.portal-confirmacao p {
+  margin: 7px 0 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* ---------------------------------------------------------------- formulário */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.campo > small {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.campo textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-veil);
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: var(--muted);
+}
+
+.campo input:disabled,
+.campo select:disabled,
+.campo textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------- modal */
+
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(16 24 40 / 42%);
+  backdrop-filter: blur(3px);
+  animation: surgir 0.16s ease;
+}
+
+.modal {
+  width: min(560px, 100%);
+  max-height: 88dvh;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-alto);
+  animation: subir-modal 0.18s ease;
+}
+
+.modal > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.modal > header h2 {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal > header p {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.modal > header button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.modal > header button:hover {
+  color: var(--text);
+  border-color: var(--gold-line);
+}
+
+.modal-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 22px 20px;
+}
+
+.modal-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.campo-largo,
+.modal-grade > .campo-largo {
+  grid-column: 1 / -1;
+}
+
+.modal-corpo footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.modal-nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.modal-nota.alerta {
+  padding: 10px 12px;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-radius: var(--r-sm);
+}
+
+/* ------------------------------------------------------ estados de carga/erro */
+
+.esqueleto {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 4px 0;
+}
+
+.esqueleto span {
+  display: block;
+  border-radius: var(--r-md);
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 300% 100%;
+  animation: brilho 1.4s ease-in-out infinite;
+}
+
+.metric-carregando strong {
+  color: var(--muted);
+}
+
+.falha {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 16px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid color-mix(in srgb, var(--danger) 26%, transparent);
+  border-radius: var(--r-md);
+}
+
+.falha p {
+  flex: 1;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+.lista-vazia,
+.coluna-vazia {
+  padding: 16px 4px;
+  font-size: 12.5px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty > .primary-btn,
+.empty > .secondary-btn {
+  margin-top: 12px;
+}
+
+/* ----------------------------------------------------------- guias (cadastros) */
+
+.guias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.guias button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.guias button:hover {
+  color: var(--text);
+  border-color: var(--gold-line);
+}
+
+.guias button.active {
+  color: var(--on-gold);
+  background: var(--gold-gradient);
+  border-color: transparent;
+}
+
+/* --------------------------------------------------------------- animações */
+
+.girando {
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes brilho {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes subir-modal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto span,
+  .girando,
+  .modal,
+  .modal-fundo,
+  .menu-suspenso,
+  .online i {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .modal-grade {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------ pareamento WhatsApp */
+
+.pareamento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.pareamento img {
+  width: 232px;
+  height: 232px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+
+.pareamento b {
+  margin-top: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pareamento > span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.pareamento-espera {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  width: 232px;
+  height: 232px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-md);
+}
+
+.pareamento-ok {
+  padding: 26px 0 18px;
+  color: var(--ok);
+}
+
+.pareamento-ok b {
+  color: var(--text);
+}
+
+/* ---------------------------------------------- importação de contatos */
+
+.area-arquivo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 30px 20px;
+  font-family: inherit;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.area-arquivo:hover {
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border-color: var(--gold-line);
+}
+
+.area-arquivo b {
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.area-arquivo span {
+  max-width: 320px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.previa-importacao {
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+
+.previa-importacao header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.previa-importacao header span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.previa-importacao header b {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.previa-importacao > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 130px minmax(0, 1fr);
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 12px;
+  color: var(--text-2);
+  border-top: 1px solid var(--line-soft);
+}
+
+.previa-importacao > div b {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previa-importacao > p {
+  margin: 7px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+
+.consentimento input {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold-deep);
+  cursor: pointer;
+}
+
+.consentimento span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.consentimento b {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.barra-progresso {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.barra-progresso i {
+  display: block;
+  height: 100%;
+  background: var(--gold-gradient);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}

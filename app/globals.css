@@ -1,3 +1,1014 @@
 @import 'tailwindcss';
 @import './functional.css';
-:root{--ink:#173f37;--coral:#e98064;--paper:#fbfaf6;--line:#e4e2d9}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:#263c37;font-family:Arial,sans-serif}.app-shell{min-height:100vh;display:flex}.sidebar{position:fixed;inset:0 auto 0 0;width:240px;background:#153b34;color:white;padding:29px 20px 22px;display:flex;flex-direction:column;z-index:10}.brand{display:flex;align-items:center;gap:11px;font-family:Georgia,serif;font-size:25px;margin:0 10px 42px}.brand>span:last-child span{color:#ec947c}.brand-mark{width:32px;height:32px;border-radius:10px;background:#e98268;display:grid;place-items:center}.nav{display:flex;flex-direction:column;gap:6px}.nav p{font-size:9px;letter-spacing:1.6px;color:#88a39d;margin:20px 12px 7px;font-weight:700}.nav a{height:42px;display:flex;align-items:center;gap:12px;padding:0 12px;border-radius:8px;color:#bdd0cb;font-size:13px;cursor:pointer}.nav a:hover,.nav a.active{background:#2b5048;color:white}.nav a b{margin-left:auto;background:#ec8266;border-radius:12px;font-size:10px;padding:3px 7px}.clinic-card{margin-top:auto;border-top:1px solid #31584f;padding:20px 5px 0;display:flex;align-items:center;gap:10px}.clinic-avatar,.user-avatar{display:grid;place-items:center;border-radius:50%;font-size:11px;font-weight:700}.clinic-avatar{width:36px;height:36px;background:#d9a58f;color:#173f37}.clinic-card div:nth-child(2){display:flex;flex-direction:column;flex:1}.clinic-card strong{font-size:12px}.clinic-card small{font-size:10px;color:#9eb4af;margin-top:3px}.content{margin-left:240px;width:calc(100% - 240px)}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 38px;background:#fbfaf6}.search{width:340px;height:39px;border:1px solid #deded7;background:#fff;border-radius:9px;display:flex;align-items:center;padding:0 12px;gap:9px;color:#969b97;font-size:12px}.search kbd{margin-left:auto;background:#f1f0ec;border:1px solid #e1dfd8;border-radius:5px;padding:3px 6px;font-size:10px}.top-actions{display:flex;align-items:center;gap:12px}.top-actions button,.appointment button{border:0;background:transparent;color:#61716d}.notification{position:relative}.notification i{position:absolute;right:1px;top:0;width:6px;height:6px;background:var(--coral);border-radius:50%}.user-avatar{width:34px;height:34px;background:#ead4c8;color:#6e493e}.page{padding:34px 38px 46px;max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:29px}.welcome p{font-size:9px;letter-spacing:1.6px;color:#9b7569;font-weight:700;margin:0 0 9px}.welcome h1{font:400 31px/1.1 Georgia,serif;color:var(--ink);margin:0 0 7px}.welcome>div>span{font-size:13px;color:#79817d}.period{height:38px;border:1px solid #deded7;background:#fff;border-radius:8px;display:flex;align-items:center;gap:8px;padding:0 13px;font-size:11px;color:#52625e}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}.metric,.panel{background:#fff;border:1px solid var(--line);border-radius:12px}.metric{padding:18px 19px}.metric-head{display:flex;align-items:center;justify-content:space-between;color:#747f7b;font-size:11px}.metric-head i{width:30px;height:30px;border-radius:8px;background:#eef3f0;color:#37675c;display:grid;place-items:center}.metric strong{font:400 26px Georgia,serif;color:var(--ink);display:block;margin:9px 0 6px}.metric small{font-size:9px;color:#939995}.metric small b{color:#43816f;margin-right:4px}.main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,.8fr);gap:16px;margin-bottom:16px}.panel{padding:21px}.panel-title{display:flex;align-items:flex-start;justify-content:space-between}.panel-title h2,.ai-panel h2{font:400 18px Georgia,serif;color:var(--ink);margin:0 0 6px}.panel-title p{margin:0;color:#8b918d;font-size:10px}.panel-title>button:first-of-type{border:0;background:#edf5f1;color:#347562;border-radius:15px;padding:6px 9px;font-size:8px;font-weight:700}.live-dot,.online i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ca481;margin-right:5px}.funnel-content{display:grid;grid-template-columns:1.8fr .8fr;gap:28px;margin-top:22px;align-items:center}.funnel-bars{display:flex;flex-direction:column;gap:9px}.funnel-row{display:flex;align-items:center;gap:11px;height:27px}.bar{height:27px;min-width:78px;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:white;font-size:10px;font-weight:700}.funnel-row label{font-size:9px;color:#747d79}.campaign-return{border-left:1px solid var(--line);padding-left:23px}.campaign-return>span{font-size:8px;letter-spacing:1px;color:#929895}.campaign-return>strong{display:block;font:400 25px Georgia,serif;color:var(--ink);margin:7px 0}.campaign-return p{font-size:8px;color:#87908c}.campaign-return p b{background:#e8f3ed;color:#39806b;padding:3px 5px;border-radius:4px}.campaign-return hr{border:0;border-top:1px solid var(--line);margin:15px 0 11px}.campaign-return>div{display:flex;gap:18px}.campaign-return>div span{display:flex;flex-direction:column;font-size:8px;color:#979c99}.campaign-return>div b{font-size:10px;color:#52625e;margin-top:4px}.ai-panel{background:#183f37;color:white;position:relative;overflow:hidden;padding:21px 23px}.ai-panel:after{content:'';position:absolute;width:150px;height:150px;border:1px solid #31584f;border-radius:50%;right:-75px;top:-70px}.ai-icon{width:39px;height:39px;background:#2b574d;border-radius:10px;display:grid;place-items:center;color:#e8a18e}.online{position:absolute;right:20px;top:24px;font-size:8px;color:#afd0c7}.ai-panel h2{color:white;margin-top:23px}.ai-panel>p{font-size:10px;line-height:1.65;color:#afc3be}.ai-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.ai-stats>div{border-left:1px solid #477067;padding-left:11px}.ai-stats b{display:block;font:400 16px Georgia,serif}.ai-stats span{font-size:7px;color:#95b1aa}.outline-btn{width:100%;height:34px;background:transparent;border:1px solid #4f716a;color:white;border-radius:7px;display:flex;justify-content:space-between;align-items:center;padding:0 12px;font-size:10px}.bottom-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}.link-btn{border:0;background:transparent!important;color:#d5745c!important;font-size:9px!important}.appointments{margin-top:14px}.appointment{display:grid;grid-template-columns:38px 34px 1fr auto 20px;gap:10px;align-items:center;padding:9px 0;border-top:1px solid #eeece6}.appointment time{font-size:10px;font-weight:700}.patient-avatar{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700}.peach{background:#f4d9cd}.sage{background:#d7e6de}.sun{background:#f1e3b9}.lavender{background:#e3dcec}.patient{display:flex;flex-direction:column}.patient b{font-size:10px}.patient span{font-size:8px;color:#929895;margin-top:3px}.status{font-size:8px;border-radius:12px;padding:5px 8px}.status i{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:5px}.confirmed{background:#edf5f1;color:#397663}.confirmed i{background:#4b9b7e}.waiting{background:#fbf2dc;color:#927222}.waiting i{background:#d3a636}.auto{font-size:7px;color:#357661;background:#edf5f1;border-radius:12px;padding:5px 8px}.auto svg{vertical-align:middle}.followup-list{margin-top:14px}.followup-list>div{border-top:1px solid #eeece6;padding:12px 0;display:flex;align-items:center;gap:10px}.follow-icon{width:31px;height:31px;border-radius:8px;display:grid;place-items:center}.green{background:#e8f2ed;color:#3f7c6a}.orange{background:#f7e8e1;color:#ce755d}.yellow{background:#f8f0d8;color:#aa8431}.followup-list p{display:flex;flex-direction:column;flex:1;margin:0}.followup-list b{font-size:10px}.followup-list small{font-size:8px;color:#929895;margin-top:3px}.followup-list>div>strong{font-size:9px}.chips{background:#f4f6f3;border-radius:7px;padding:9px 10px;display:flex;justify-content:space-between;font-size:8px;color:#7f8985}.chip-on{display:inline-block;width:6px;height:6px;background:#4a9f7f;border-radius:50%;margin-right:5px}@media(max-width:1050px){.metrics{grid-template-columns:repeat(2,1fr)}.main-grid,.bottom-grid{grid-template-columns:1fr}}@media(max-width:720px){.sidebar{width:68px;padding:22px 10px}.brand>span:last-child,.nav p,.nav a{font-size:0}.brand{margin:0 auto 35px}.nav a{justify-content:center}.clinic-card div:not(.clinic-avatar),.clinic-card svg{display:none}.clinic-card{justify-content:center}.content{margin-left:68px;width:calc(100% - 68px)}.topbar{padding:0 16px}.search{width:210px}.page{padding:24px 16px}.period{font-size:0}.metrics{grid-template-columns:1fr}.funnel-content{grid-template-columns:1fr}.campaign-return{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}}
+@import './aplicacao.css';
+
+/* ============================================================
+   IMPÉRIA ESTHÉTIQUE — sistema de design
+   Painel claro e denso, com o ouro da marca como acento.
+   Toda a identidade vive nestes tokens: trocar aqui = trocar
+   no sistema inteiro. O tema escuro é a variação data-tema="escuro".
+   ============================================================ */
+
+:root {
+  /* — Ouro da marca —
+     Em fundo branco o ouro claro não tem contraste para texto, então
+     ele é decorativo: o texto usa --gold-tinta e os preenchimentos
+     levam texto escuro (--on-gold), que é o par legível do ouro. */
+  --gold: #c8a15b;
+  --gold-bright: #e0be82;
+  --gold-deep: #8a6a33;
+  --gold-tinta: #7d5f2c;
+  --gold-line: #c8a15b4d;
+  --gold-veil: #c8a15b1f;
+  --gold-gradient: linear-gradient(135deg, #d8b877 0%, #c8a15b 55%, #b08c48 100%);
+  --on-gold: #241a08;
+
+  /* — Superfícies — */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+  --surface-3: #eef0f3;
+  --line: #e2e5ea;
+  --line-soft: #edeff2;
+
+  /* — Texto — */
+  --text: #16191d;
+  --text-2: #5b6470;
+  --muted: #8a929d;
+
+  /* — Semânticos — */
+  --ok: #0f9d76;
+  --ok-bg: #0f9d761a;
+  --warn: #b7791f;
+  --warn-bg: #b7791f1a;
+  --danger: #d64545;
+  --danger-bg: #d645451a;
+  --info: #2f72c4;
+
+  /* Cor das marcas de gráfico. O ouro da marca (#c8a15b) tem contraste 2,41
+     sobre branco — abaixo do mínimo de 3:1 exigido para objeto gráfico — então
+     a versão usada em barra e coluna é mais fechada. Validado com o script de
+     paleta do guia de visualização. */
+  --viz: #a8823c;
+  --viz-fraco: #a8823c26;
+
+  /* — Formas — */
+  --r-sm: 8px;
+  --r-md: 11px;
+  --r-lg: 15px;
+  --shadow: 0 1px 2px rgb(16 24 40 / 5%), 0 1px 3px rgb(16 24 40 / 5%);
+  --shadow-alto: 0 14px 38px rgb(16 24 40 / 13%);
+  --menu: 64px;
+
+  color-scheme: light;
+}
+
+[data-tema='escuro'] {
+  --gold-tinta: #e0be82;
+  --gold-line: #c8a15b40;
+  --gold-veil: #c8a15b14;
+  --on-gold: #1a1206;
+
+  --bg: #0c0d0f;
+  --surface: #141619;
+  --surface-2: #1a1d21;
+  --surface-3: #23272c;
+  --line: #262a30;
+  --line-soft: #1f2328;
+
+  --text: #f0f1f3;
+  --text-2: #a8b0ba;
+  --muted: #767e89;
+
+  --ok: #34c79a;
+  --ok-bg: #34c79a1f;
+  --warn: #e0a944;
+  --warn-bg: #e0a9441f;
+  --danger: #e86a6a;
+  --danger-bg: #e86a6a1f;
+  --info: #6aa5e8;
+
+  --viz: #b8873b;
+  --viz-fraco: #b8873b33;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 2px 8px rgb(0 0 0 / 24%);
+  --shadow-alto: 0 16px 42px rgb(0 0 0 / 55%);
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------- base */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  /* O painel é uma tela cheia com rolagem interna. Sem isto, rolar além do
+     topo do conteúdo propaga o gesto para a raiz e o macOS estica o viewport
+     inteiro — a barra superior desce junto, parecendo que não é fixa. */
+  overscroll-behavior: none;
+}
+
+body {
+  /* As variáveis do next/font vivem na classe aplicada ao <body>, então os
+     tokens de fonte precisam ser declarados aqui — em :root elas não existem
+     e a declaração inteira seria descartada. Os nomes são próprios para não
+     colidir com --font-sans, que o tema do Tailwind também define. */
+  --fonte: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* Títulos e corpo na mesma família: o serifado decorativo saiu a pedido,
+     para o painel ler como ferramenta de trabalho e não como peça de marca. */
+  --fonte-titulo: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  margin: 0;
+  font-family: var(--fonte);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--gold-veil);
+}
+
+/* Barras de rolagem discretas, para não competir com o conteúdo denso. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border: 2px solid transparent;
+  border-radius: 99px;
+  background-clip: content-box;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--menu) minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* — Menu lateral —
+   Largura fixa, só ícones, como a barra do WhatsApp Desktop. O nome da seção
+   aparece num balão ao lado do ícone apontado; a barra nunca muda de largura,
+   então o conteúdo ao lado fica parado. */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 13px 0 12px;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  /* Os balões saem para fora da coluna: nada aqui pode recortá-los. */
+  overflow: visible;
+  z-index: 30;
+}
+
+.menu-selo {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--on-gold);
+  background: var(--gold-gradient);
+  border-radius: 11px;
+  box-shadow: 0 2px 8px #c8a15b4d;
+}
+
+.menu-itens {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  overscroll-behavior: contain;
+}
+
+.menu-bloco {
+  display: contents;
+}
+
+.menu-bloco hr {
+  width: 26px;
+  height: 1px;
+  margin: 7px auto;
+  border: 0;
+  background: var(--line);
+}
+
+.menu-item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.menu-item:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+
+.menu-item.ativo {
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+}
+
+/* Marcador da seção atual, colado na borda da barra. */
+.menu-item.ativo::before {
+  content: '';
+  position: absolute;
+  left: -11px;
+  width: 3px;
+  height: 20px;
+  background: var(--gold);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Contagem de não lidas sobre o ícone, como no WhatsApp. */
+.menu-item em {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  color: #fff;
+  background: var(--danger);
+  border: 2px solid var(--surface);
+  border-radius: 999px;
+}
+
+/* Balão com o nome da seção. */
+.menu-item::after {
+  content: attr(data-dica);
+  position: absolute;
+  left: calc(100% + 9px);
+  z-index: 50;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--surface);
+  background: var(--text);
+  border-radius: 7px;
+  box-shadow: var(--shadow-alto);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-4px);
+  transition:
+    opacity 0.13s ease,
+    transform 0.13s ease;
+}
+
+.menu-item:hover::after,
+.menu-item:focus-visible::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.menu-tema {
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item::after {
+    transition: none;
+  }
+}
+
+/* — Área de conteúdo — */
+
+.area {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  height: 58px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  max-width: 380px;
+  padding: 0 12px;
+  height: 36px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.busca:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-veil);
+}
+
+.busca input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.busca input::placeholder {
+  color: var(--muted);
+}
+
+.barra-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.seletor-unidade {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 10px 5px 6px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.seletor-unidade:hover:not(:disabled) {
+  border-color: var(--gold-line);
+}
+
+.seletor-unidade:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.seletor-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+}
+
+.seletor-texto strong {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.seletor-texto small {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.botao-icone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.botao-icone:hover {
+  color: var(--text);
+  border-color: var(--gold-line);
+}
+
+.notificacao i {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--danger);
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+}
+
+.conteudo {
+  /* A folga inferior existe para a barra fixa de salvar não cobrir o último
+     elemento quando a rolagem chega ao fim. */
+  padding: 22px 24px 84px;
+  overflow-y: auto;
+  /* Prende o gesto a este painel: chegar ao fim da lista não rola o que está atrás. */
+  overscroll-behavior: contain;
+}
+
+/* Conversas ocupa a área inteira, como um cliente de mensagens. */
+.conteudo-cheio {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------------- cabeçalho */
+
+.welcome,
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.welcome p {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  color: var(--gold-tinta);
+}
+
+.welcome h1 {
+  font-family: var(--fonte-titulo);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.welcome > div > span {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* -------------------------------------------------------------------- botões */
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--on-gold);
+  background: var(--gold-gradient);
+  border: 0;
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px #c8a15b4d;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 13px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--gold-line);
+}
+
+.outline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gold-tinta);
+  background: transparent;
+  border: 1px solid var(--gold-line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.outline-btn:hover {
+  background: var(--gold-veil);
+}
+
+.link-btn {
+  padding: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gold-tinta);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* -------------------------------------------------------------------- painel */
+
+.panel {
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+.panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.panel-title h2 {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+
+.panel-title p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ métricas */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.metric {
+  padding: 16px 17px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+
+.metric:hover {
+  border-color: var(--gold-line);
+}
+
+.metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.metric > span,
+.metric-head span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.metric-head i {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border-radius: 8px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.metric small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.metric small b {
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.mini-metrics .metric strong {
+  font-size: 21px;
+}
+
+/* ------------------------------------------------------------------- avatares */
+
+.patient-avatar,
+.clinic-avatar,
+.user-avatar,
+.big-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 50%;
+}
+
+.patient-avatar {
+  width: 32px;
+  height: 32px;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border: 1px solid var(--gold-line);
+}
+
+.patient-avatar.sage {
+  color: #2f6f5e;
+  background: #2f6f5e1a;
+  border-color: #2f6f5e33;
+}
+
+.patient-avatar.peach {
+  color: #b5643f;
+  background: #b5643f1a;
+  border-color: #b5643f33;
+}
+
+.clinic-avatar {
+  width: 30px;
+  height: 30px;
+  color: var(--on-gold);
+  background: var(--gold-gradient);
+  border-radius: 9px;
+}
+
+.user-avatar {
+  width: 34px;
+  height: 34px;
+  color: var(--text);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.big-avatar {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 12px;
+  font-size: 19px;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border: 1px solid var(--gold-line);
+}
+
+/* -------------------------------------------------------- selos e interruptor */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 999px;
+}
+
+.status i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.status.confirmed {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+
+.status.waiting {
+  color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.status.cancelado {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border-radius: 6px;
+}
+
+.switch {
+  position: relative;
+  width: 38px;
+  height: 21px;
+  padding: 0;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.switch i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  background: var(--surface);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+  transition: transform 0.18s ease;
+}
+
+.switch.on {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.switch.on i {
+  transform: translateX(17px);
+}
+
+/* ------------------------------------------------------------ menus e avisos */
+
+.menu-ancora {
+  position: relative;
+}
+
+.menu-suspenso {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  min-width: 214px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-alto);
+  animation: surgir 0.14s ease;
+}
+
+.menu-suspenso.direita {
+  right: 0;
+  left: auto;
+}
+
+.menu-suspenso button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.menu-suspenso button:hover {
+  background: var(--surface-2);
+}
+
+.menu-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 4px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.menu-titulo small {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-alto);
+  transform: translateX(-50%);
+  animation: subir 0.2s ease;
+}
+
+.toast svg {
+  color: var(--ok);
+}
+
+.toast button {
+  display: grid;
+  place-items: center;
+  margin-left: 4px;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.toast.toast-erro svg {
+  color: var(--danger);
+}
+
+/* ------------------------------------------------------------------ grades */
+
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.bottom-grid,
+.report-grid,
+.agenda-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+/* Duas colunas fixas. Com auto-fit, o cartão que ocupa a linha inteira
+   (grid-column: 1/-1) obriga a grade a manter todas as faixas de 320px, e as
+   faixas vazias sobravam como um vão branco à direita. */
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .settings-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.settings-card.full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1180px) {
+  .main-grid,
+  .bottom-grid,
+  .report-grid,
+  .agenda-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+}
+
+/* O botão fica marcado enquanto o painel que ele controla está aberto. */
+.botao-icone.ativo {
+  color: var(--gold-tinta);
+  background: var(--gold-veil);
+  border-color: var(--gold-line);
+}

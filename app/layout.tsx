@@ -1,20 +1,26 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Great_Vibes, Poppins } from 'next/font/google';
 import './globals.css';
+import { ProvedorSessao } from '@/lib/dados/sessao';
+import { ProvedorAviso } from '@/components/painel/base';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const poppins = Poppins({
+  variable: '--font-poppins',
+  weight: ['300', '400', '500', '600', '700'],
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const greatVibes = Great_Vibes({
+  variable: '--font-script',
+  weight: '400',
   subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: 'CliniIA — Inteligência para sua clínica',
-  description: 'Atendimento, agendamentos, CRM e reativação de pacientes em um só lugar.',
+  title: 'Impéria Esthétique — Inteligência para sua operação',
+  description:
+    'Atendimento, agendamentos, CRM e reativação de clientes em um só lugar. Sua essência, nossa excelência.',
+  icons: { icon: '/favicon.svg' },
 };
 
 export default function RootLayout({
@@ -23,11 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-tema="claro">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${greatVibes.variable} antialiased`}
       >
-        {children}
+        <ProvedorSessao>
+          <ProvedorAviso>{children}</ProvedorAviso>
+        </ProvedorSessao>
       </body>
     </html>
   );

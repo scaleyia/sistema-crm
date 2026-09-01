@@ -1,0 +1,235 @@
+import { variavel } from './ambiente';
+
+/**
+ * Cliente da UazApi (uazapiGO v2).
+ *
+ * Vive só no servidor: o `admintoken` cria e apaga instâncias do servidor
+ * inteiro, e o token de instância envia mensagens em nome da clínica. Nenhum
+ * dos dois pode chegar ao navegador.
+ *
+ * A API usa dois esquemas de autenticação, ambos por cabeçalho:
+ *   - `admintoken` para operações administrativas (criar/listar instâncias);
+ *   - `token` (da instância) para todo o resto.
+ */
+
+export type Instancia = {
+  id?: string;
+  token?: string;
+  status?: string;
+  qrcode?: string;
+  paircode?: string;
+  name?: string;
+  profileName?: string;
+  owner?: string;
+};
+
+export type RespostaConexao = {
+  connected?: boolean;
+  loggedIn?: boolean;
+  instance?: Instancia;
+};
+
+export class ErroUazapi extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ErroUazapi';
+  }
+}
+
+async function chamar<T>(
+  caminho: string,
+  opcoes: { metodo?: string; corpo?: unknown; adminToken?: string; token?: string },
+): Promise<T> {
+  const base = (await variavel('UAZAPI_URL')).replace(/\/+$/, '');
+
+  const cabecalhos: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (opcoes.adminToken) cabecalhos.admintoken = opcoes.adminToken;
+  if (opcoes.token) cabecalhos.token = opcoes.token;
+
+  const resposta = await fetch(`${base}${caminho}`, {
+    method: opcoes.metodo ?? 'POST',
+    headers: cabecalhos,
+    body: opcoes.corpo === undefined ? undefined : JSON.stringify(opcoes.corpo),
+  });
+
+  const texto = await resposta.text();
+  let corpo: unknown = null;
+  try {
+    corpo = texto ? JSON.parse(texto) : null;
+  } catch {
+    corpo = texto;
+  }
+
+  if (!resposta.ok) {
+    // A API sinaliza a falha com `error: true` e explica em `message`; usar
+    // `error` direto viraria a string "true", inútil no log e na tela.
+    const dados = corpo as { error?: unknown; message?: unknown } | null;
+    const detalhe =
+      (typeof dados?.message === 'string' && dados.message) ||
+      (typeof dados?.error === 'string' && dados.error) ||
+      (typeof corpo === 'string' && corpo) ||
+      resposta.statusText ||
+      `HTTP ${resposta.status}`;
+    throw new ErroUazapi(`UazApi ${caminho}: ${detalhe}`, resposta.status);
+  }
+
+  return corpo as T;
+}
+
+async function admin(): Promise<string> {
+  return variavel('UAZAPI_ADMIN_TOKEN');
+}
+
+/** Cria uma instância nova. O token devolvido é o que autentica os envios. */
+export async function criarInstancia(nome: string): Promise<Instancia> {
+  const dados = await chamar<{ instance?: Instancia; token?: string; name?: string }>(
+    '/instance/create',
+    { corpo: { name: nome }, adminToken: await admin() },
+  );
+
+  // A resposta traz o token na raiz e o restante em `instance`.
+  return { ...dados.instance, token: dados.token ?? dados.instance?.token, name: nome };
+}
+
+/**
+ * Inicia o pareamento. Sem `telefone` devolve QR Code em base64; com telefone,
+ * devolve um código de 8 dígitos para digitar no aparelho.
+ */
+export async function conectarInstancia(
+  token: string,
+  telefone?: string,
+): Promise<RespostaConexao> {
+  return chamar<RespostaConexao>('/instance/connect', {
+    corpo: telefone ? { phone: telefone } : {},
+    token,
+  });
+}
+
+export async function statusInstancia(token: string): Promise<RespostaConexao> {
+  return chamar<RespostaConexao>('/instance/status', { metodo: 'GET', token });
+}
+
+export async function desconectarInstancia(token: string): Promise<unknown> {
+  return chamar('/instance/disconnect', { corpo: {}, token });
+}
+
+export async function apagarInstancia(token: string): Promise<unknown> {
+  return chamar('/instance', { metodo: 'DELETE', token });
+}
+
+/** Aponta os eventos da instância para o nosso webhook. */
+export async function configurarWebhook(token: string, url: string): Promise<unknown> {
+  return chamar('/webhook', {
+    corpo: {
+      enabled: true,
+      url,
+      events: ['messages', 'connection'],
+      // Mensagens que nós mesmos enviamos pela API já foram gravadas no envio;
+      // recebê-las de volta só duplicaria trabalho.
+      excludeMessages: ['wasSentByApi'],
+      addUrlEvents: false,
+      addUrlTypesMessages: false,
+    },
+    token,
+  });
+}
+
+export async function enviarTexto(
+  token: string,
+  destino: string,
+  texto: string,
+  atraso?: number,
+): Promise<{ id?: string; messageid?: string; key?: { id?: string } }> {
+  return chamar('/send/text', {
+    corpo: { number: destino, text: texto, ...(atraso ? { delay: atraso } : {}) },
+    token,
+  });
+}
+
+/**
+ * Dispara uma campanha. A UazApi cuida da fila e do intervalo entre envios,
+ * que é o que mantém o número longe do bloqueio.
+ */
+export async function criarDisparo(
+  token: string,
+  entrada: {
+    numeros: string[];
+    texto: string;
+    pasta: string;
+    atrasoMin: number;
+    atrasoMax: number;
+    agendadoPara?: number;
+  },
+): Promise<{ folder_id?: string; count?: number; status?: string }> {
+  return chamar('/sender/simple', {
+    corpo: {
+      numbers: entrada.numeros,
+      type: 'text',
+      text: entrada.texto,
+      folder: entrada.pasta,
+      delayMin: entrada.atrasoMin,
+      delayMax: entrada.atrasoMax,
+      scheduled_for: entrada.agendadoPara ?? 0,
+    },
+    token,
+  });
+}
+
+/** Tipos que a UazApi aceita em /send/media. */
+export type TipoMidia = 'image' | 'video' | 'document' | 'audio' | 'ptt' | 'sticker';
+
+/**
+ * Envia mídia. `arquivo` pode ser uma URL alcançável pela UazApi ou o conteúdo
+ * em base64 — usamos URL assinada do nosso armazenamento, que evita trafegar o
+ * arquivo inteiro duas vezes.
+ */
+export async function enviarMidia(
+  token: string,
+  entrada: {
+    destino: string;
+    tipo: TipoMidia;
+    arquivo: string;
+    legenda?: string | null;
+    nomeDocumento?: string | null;
+    mimetype?: string | null;
+  },
+): Promise<{ id?: string; messageid?: string; key?: { id?: string } }> {
+  return chamar('/send/media', {
+    corpo: {
+      number: entrada.destino,
+      type: entrada.tipo,
+      file: entrada.arquivo,
+      ...(entrada.legenda ? { text: entrada.legenda } : {}),
+      ...(entrada.nomeDocumento ? { docName: entrada.nomeDocumento } : {}),
+      ...(entrada.mimetype ? { mimetype: entrada.mimetype } : {}),
+    },
+    token,
+  });
+}
+
+/**
+ * Situação de cada mensagem de uma fila de disparo. É por aqui que o funil
+ * descobre quem realmente recebeu — a criação da fila só enfileira.
+ */
+export async function listarMensagensDoDisparo(
+  token: string,
+  pastaId: string,
+): Promise<Array<{ number?: string; chatid?: string; status?: string }>> {
+  const resposta = await chamar<
+    { messages?: Array<{ number?: string; chatid?: string; status?: string }> } | Array<unknown>
+  >('/sender/listmessages', { corpo: { folder_id: pastaId, limit: 1000 }, token });
+
+  if (Array.isArray(resposta)) return resposta as Array<{ status?: string }>;
+  return resposta?.messages ?? [];
+}
+
+/** Filtra quem realmente tem WhatsApp antes de gastar disparo. */
+export async function checarNumeros(
+  token: string,
+  numeros: string[],
+): Promise<Array<{ query: string; isInWhatsapp: boolean }>> {
+  return chamar('/chat/check', { corpo: { numbers: numeros }, token });
+}

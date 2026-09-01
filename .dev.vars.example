@@ -1,0 +1,20 @@
+# Variáveis de SERVIDOR. Copie para `.dev.vars` e preencha.
+#
+# Nunca use o prefixo VITE_ aqui: ele faz o valor ser embutido no bundle do
+# navegador. Estas variáveis existem só no servidor.
+#
+# Em produção, o equivalente é definir as mesmas chaves no painel da
+# hospedagem (ou `npx wrangler secret put NOME`, no Cloudflare).
+
+# Servidor UazApi da clínica e o token de administrador dele.
+UAZAPI_URL=https://SEU-SUBDOMINIO.uazapi.com
+UAZAPI_ADMIN_TOKEN=
+
+# Autoriza o servidor a chamar as funções wa_* no Postgres.
+# Gere com: openssl rand -hex 32
+# Depois registre o hash no banco:
+#   select public.wa_definir_segredo('O_VALOR_GERADO');
+INTEGRACAO_SEGREDO=
+
+# Gera as respostas da assistente. platform.openai.com > API keys
+OPENAI_API_KEY=
