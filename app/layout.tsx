@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Great_Vibes, Poppins } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { ProvedorSessao } from '@/lib/dados/sessao';
 import { ProvedorAviso } from '@/components/painel/base';
@@ -7,12 +7,6 @@ import { ProvedorAviso } from '@/components/painel/base';
 const poppins = Poppins({
   variable: '--font-poppins',
   weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-});
-
-const greatVibes = Great_Vibes({
-  variable: '--font-script',
-  weight: '400',
   subsets: ['latin'],
 });
 
@@ -31,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" data-tema="claro">
       <body
-        className={`${poppins.variable} ${greatVibes.variable} antialiased`}
+        className={`${poppins.variable} antialiased`}
       >
         <ProvedorSessao>
           <ProvedorAviso>{children}</ProvedorAviso>

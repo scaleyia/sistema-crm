@@ -6,18 +6,16 @@ import { supabase } from '@/lib/supabase/cliente';
 import { mensagemDeErro } from '@/lib/dados/consulta';
 import { useSessao } from '@/lib/dados/sessao';
 
-/** Moldura das telas de fora do painel (login e onboarding). */
+/**
+ * Moldura das telas de fora do painel (login e onboarding).
+ *
+ * Sem marca fixa: antes do login não se sabe de qual clínica é o acesso, e o
+ * sistema atende várias. Estampar uma delas aqui mostraria a marca errada para
+ * todas as outras.
+ */
 function Portal({ children }: { children: React.ReactNode }) {
   return (
     <main className="portal">
-      <div className="portal-marca">
-        <span className="brand-mark" role="img" aria-label="Impéria Esthétique" />
-        <span className="brand-name">
-          <b>IMPÉRIA</b>
-          <small>ESTHÉTIQUE</small>
-        </span>
-        <p className="brand-tagline">Sua essência, nossa excelência.</p>
-      </div>
       <div className="portal-cartao">{children}</div>
     </main>
   );
