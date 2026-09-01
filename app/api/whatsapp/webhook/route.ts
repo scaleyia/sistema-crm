@@ -139,7 +139,10 @@ export async function POST(req: Request) {
     // Captura temporária: o formato do envelope não está documentado e o
     // parser foi escrito por suposição. Guardar o corpo cru é a única forma
     // de descobrir por que um evento real é descartado.
-    void servidorDiagnostico(chaveSegredo, corpo);
+    //
+    // Precisa ser aguardado: o Workers cancela promessa não aguardada assim
+    // que a resposta é devolvida, e a gravação nunca completaria.
+    await servidorDiagnostico(chaveSegredo, corpo);
 
     const { evento, instancia, dados } = lerEnvelope(corpo);
 
