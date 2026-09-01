@@ -113,6 +113,18 @@ const TIPOS: Record<string, string> = {
   contactmessage: 'contato',
 };
 
+/** Grava o corpo cru sem deixar uma falha aqui atrapalhar a ingestão. */
+async function servidorDiagnostico(chave: string, corpo: unknown): Promise<void> {
+  try {
+    await anonimo().rpc('wa_registrar_diagnostico', {
+      p_segredo: chave,
+      p_corpo: corpo as never,
+    });
+  } catch {
+    // Diagnóstico é acessório: nunca pode derrubar o recebimento.
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const url = new URL(req.url);
@@ -121,12 +133,19 @@ export async function POST(req: Request) {
       return new Response('não autorizado', { status: 401 });
     }
 
+    const chaveSegredo = await segredo();
     const corpo = (await req.json()) as Record<string, unknown>;
+
+    // Captura temporária: o formato do envelope não está documentado e o
+    // parser foi escrito por suposição. Guardar o corpo cru é a única forma
+    // de descobrir por que um evento real é descartado.
+    void servidorDiagnostico(chaveSegredo, corpo);
+
     const { evento, instancia, dados } = lerEnvelope(corpo);
 
     if (!instancia) return Response.json({ ignorado: 'sem instância' });
 
-    const chave = await segredo();
+    const chave = chaveSegredo;
     const servidor = anonimo();
 
     if (evento.startsWith('connection')) {

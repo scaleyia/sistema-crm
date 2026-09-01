@@ -2807,6 +2807,10 @@ export type Database = {
         Args: { p_segredo: string; p_instancia: string }
         Returns: { numero_id: string; token: string }[]
       }
+      wa_registrar_diagnostico: {
+        Args: { p_segredo: string; p_corpo: Json }
+        Returns: undefined
+      }
       wa_registrar_mensagem: {
         Args: {
           p_segredo: string
