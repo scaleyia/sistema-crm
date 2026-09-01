@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell, Check, ChevronDown, LogOut, MoonStar, Search, Sun } from 'lucide-react';
-import { supabase } from '@/lib/supabase/cliente';
+import { Bell, Check, ChevronDown, LogOut, MoonStar, Search, Sun, TriangleAlert } from 'lucide-react';
+import { CONFIGURADO, supabase } from '@/lib/supabase/cliente';
 import { useConsulta } from '@/lib/dados/consulta';
 import { useSessao } from '@/lib/dados/sessao';
 import { iniciais } from '@/lib/dados/formato';
@@ -23,6 +23,10 @@ import { PainelIA } from '@/components/painel/painel-ia';
 export default function Home() {
   const { situacao } = useSessao();
 
+  // Build sem as variáveis do Supabase: sem isto a página inteira falharia
+  // com 500 e ninguém saberia por quê.
+  if (!CONFIGURADO) return <ConfiguracaoAusente />;
+
   if (situacao === 'carregando') {
     return (
       <main className="portal">
@@ -37,6 +41,24 @@ export default function Home() {
   if (situacao === 'sem-clinica') return <Onboarding />;
 
   return <Painel />;
+}
+
+function ConfiguracaoAusente() {
+  return (
+    <main className="portal">
+      <div className="portal-cartao portal-confirmacao">
+        <TriangleAlert size={28} />
+        <h1>Configuração incompleta</h1>
+        <p>
+          Este build não recebeu <code>VITE_SUPABASE_URL</code> e{' '}
+          <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>. Elas são embutidas no
+          momento da compilação, então precisam existir como variáveis de{' '}
+          <b>build</b> da hospedagem — definir apenas em tempo de execução não
+          resolve.
+        </p>
+      </div>
+    </main>
+  );
 }
 
 function Painel() {

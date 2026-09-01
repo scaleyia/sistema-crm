@@ -11,12 +11,12 @@ import type { Database } from './tipos-banco';
 const URL = import.meta.env.VITE_SUPABASE_URL;
 const CHAVE = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-if (!URL || !CHAVE) {
-  throw new Error(
-    'Faltam VITE_SUPABASE_URL e/ou VITE_SUPABASE_PUBLISHABLE_KEY. ' +
-      'Copie .env.example para .env.local e preencha os valores.',
-  );
-}
+/**
+ * Estas variáveis são embutidas no código durante o build, não lidas em
+ * execução. Se o build não as recebeu, não há o que fazer em produção além de
+ * avisar — por isso a checagem é exposta, e não um erro lançado na importação.
+ */
+export const CONFIGURADO = Boolean(URL && CHAVE);
 
 export type ClienteCliniIA = SupabaseClient<Database>;
 
@@ -27,6 +27,14 @@ let instancia: ClienteCliniIA | undefined;
  * sessão para toda a aplicação — chamar várias vezes devolve a mesma instância.
  */
 export function clienteSupabase(): ClienteCliniIA {
+  if (!CONFIGURADO) {
+    throw new Error(
+      'Faltam VITE_SUPABASE_URL e/ou VITE_SUPABASE_PUBLISHABLE_KEY no build. ' +
+        'Local: copie .env.example para .env.local. ' +
+        'Produção: defina as duas como variáveis de build da hospedagem.',
+    );
+  }
+
   instancia ??= createClient<Database>(URL, CHAVE, {
     auth: {
       persistSession: true,
@@ -37,4 +45,17 @@ export function clienteSupabase(): ClienteCliniIA {
   return instancia;
 }
 
-export const supabase = clienteSupabase();
+/**
+ * O cliente só é criado no primeiro uso.
+ *
+ * Criá-lo na importação fazia um build sem as variáveis derrubar a aplicação
+ * inteira com HTTP 500 e nenhuma pista — inclusive a tela que explicaria o
+ * problema. Adiando, a falha aparece onde dá para tratá-la.
+ */
+export const supabase = new Proxy({} as ClienteCliniIA, {
+  get(_alvo, propriedade) {
+    const cliente = clienteSupabase();
+    const valor = Reflect.get(cliente, propriedade, cliente);
+    return typeof valor === 'function' ? valor.bind(cliente) : valor;
+  },
+});

@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/cliente';
+import { CONFIGURADO, supabase } from '@/lib/supabase/cliente';
 import type { Database } from '@/lib/supabase/tipos-banco';
 
 type Perfil = Database['public']['Tables']['perfis']['Row'];
@@ -120,6 +120,7 @@ export function ProvedorSessao({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!CONFIGURADO) return;
     let ativo = true;
 
     void supabase.auth.getSession().then(({ data }) => {
