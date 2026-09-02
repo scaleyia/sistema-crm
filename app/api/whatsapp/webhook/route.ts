@@ -159,12 +159,27 @@ export async function POST(req: Request) {
     // Grupos não são atendimento individual; ficam de fora do CRM.
     if (mensagem.isGroup) return Response.json({ ignorado: 'grupo' });
 
-    const telefone =
-      telefoneDoJid(mensagem.sender_pn) ||
-      telefoneDoJid(mensagem.chatid) ||
-      telefoneDoJid(mensagem.sender);
+    /**
+     * Quem é o outro lado da conversa.
+     *
+     * `chatid` é sempre o interlocutor, nos dois sentidos — é ele que define a
+     * thread. `sender_pn` só serve quando a mensagem é recebida: numa mensagem
+     * enviada do celular ele traz o número da própria clínica, e usá-lo criava
+     * um "paciente" com o número do próprio chip.
+     *
+     * `sender` fica de fora: em conversa individual ele costuma vir como LID
+     * (13534129819741@lid), que não é telefone e viraria cadastro inválido.
+     */
+    const telefone = mensagem.fromMe
+      ? telefoneDoJid(mensagem.chatid)
+      : telefoneDoJid(mensagem.chatid) || telefoneDoJid(mensagem.sender_pn);
 
     if (!telefone) return Response.json({ ignorado: 'sem telefone' });
+
+    // Conversa do número consigo mesmo ("Mensagem para mim") não é atendimento.
+    if (telefone === telefoneDoJid(corpo.owner)) {
+      return Response.json({ ignorado: 'conversa do número com ele mesmo' });
+    }
 
     // O corpo real usa "Conversation", "ImageMessage" etc., e às vezes traz o
     // formato em `type`/`mediaType`. Normalizamos os três.
