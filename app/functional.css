@@ -2668,3 +2668,12 @@ textarea.prompt {
 .clinic-avatar.com-logo img {
   padding: 3px;
 }
+
+/* Mensagem escrita e ainda a caminho do servidor. */
+.message.pendente {
+  opacity: 0.62;
+}
+
+.message.pendente time {
+  font-style: italic;
+}

@@ -48,14 +48,22 @@ function primeiroTexto(...valores: unknown[]): string {
   return '';
 }
 
-/** O formato do envelope varia entre versões; aceitamos as variações conhecidas. */
+/**
+ * O formato do envelope varia entre versões; aceitamos as variações conhecidas.
+ *
+ * A ordem importa: o corpo real traz `instanceName` com o nome da instância e
+ * `owner` com o número de telefone do aparelho. Consultar `owner` primeiro
+ * fazia o telefone ser tratado como instância, e nenhuma credencial batia —
+ * todo evento recebido era descartado com "instância não pertence a nenhuma
+ * clínica". `owner` só entra como último recurso.
+ */
 function lerEnvelope(corpo: Record<string, unknown>) {
   const evento = primeiroTexto(corpo.event, corpo.EventType, corpo.type).toLowerCase();
   const instancia = primeiroTexto(
+    corpo.instanceName,
     corpo.instance,
     corpo.instance_id,
     corpo.owner,
-    corpo.instanceName,
   );
   const dados = (corpo.data ?? corpo) as Record<string, unknown>;
   return { evento, instancia, dados };
@@ -113,18 +121,6 @@ const TIPOS: Record<string, string> = {
   contactmessage: 'contato',
 };
 
-/** Grava o corpo cru sem deixar uma falha aqui atrapalhar a ingestão. */
-async function servidorDiagnostico(chave: string, corpo: unknown): Promise<void> {
-  try {
-    await anonimo().rpc('wa_registrar_diagnostico', {
-      p_segredo: chave,
-      p_corpo: corpo as never,
-    });
-  } catch {
-    // Diagnóstico é acessório: nunca pode derrubar o recebimento.
-  }
-}
-
 export async function POST(req: Request) {
   try {
     const url = new URL(req.url);
@@ -133,22 +129,12 @@ export async function POST(req: Request) {
       return new Response('não autorizado', { status: 401 });
     }
 
-    const chaveSegredo = await segredo();
     const corpo = (await req.json()) as Record<string, unknown>;
-
-    // Captura temporária: o formato do envelope não está documentado e o
-    // parser foi escrito por suposição. Guardar o corpo cru é a única forma
-    // de descobrir por que um evento real é descartado.
-    //
-    // Precisa ser aguardado: o Workers cancela promessa não aguardada assim
-    // que a resposta é devolvida, e a gravação nunca completaria.
-    await servidorDiagnostico(chaveSegredo, corpo);
-
     const { evento, instancia, dados } = lerEnvelope(corpo);
 
     if (!instancia) return Response.json({ ignorado: 'sem instância' });
 
-    const chave = chaveSegredo;
+    const chave = await segredo();
     const servidor = anonimo();
 
     if (evento.startsWith('connection')) {
@@ -180,7 +166,13 @@ export async function POST(req: Request) {
 
     if (!telefone) return Response.json({ ignorado: 'sem telefone' });
 
-    const tipo = TIPOS[texto(mensagem.messageType).toLowerCase()] ?? 'texto';
+    // O corpo real usa "Conversation", "ImageMessage" etc., e às vezes traz o
+    // formato em `type`/`mediaType`. Normalizamos os três.
+    const tipo =
+      TIPOS[texto(mensagem.messageType).toLowerCase()] ??
+      TIPOS[texto((mensagem as { mediaType?: unknown }).mediaType).toLowerCase()] ??
+      TIPOS[texto((mensagem as { type?: unknown }).type).toLowerCase()] ??
+      'texto';
     const midia = primeiroTexto(mensagem.fileURL) || null;
 
     // Sem texto e sem mídia o banco recusaria a linha; o rótulo preserva o

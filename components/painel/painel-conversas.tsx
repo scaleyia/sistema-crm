@@ -65,6 +65,10 @@ export function PainelConversas({ busca }: { busca: string }) {
   const [aba, setAba] = useState<'todas' | 'minhas' | 'nao-lidas'>('todas');
   const [conversaId, setConversaId] = useState<string | null>(null);
   const [enviandoMidia, setEnviandoMidia] = useState(false);
+  // Mensagens já escritas e ainda a caminho do servidor. Sem isto a bolha só
+  // aparece depois de autenticar, consultar a conversa, falar com a UazApi e
+  // recarregar a thread — meio segundo largo de tela parada.
+  const [pendentes, setPendentes] = useState<Array<{ id: string; conteudo: string }>>([]);
   const [modalAberto, setModalAberto] = useState(false);
   const [contatoAberto, setContatoAberto] = useState(false);
   const [pulso, setPulso] = useState(0);
@@ -158,6 +162,11 @@ export function PainelConversas({ busca }: { busca: string }) {
     fimDaThread.current?.scrollIntoView({ block: 'end' });
   }, [mensagens.dados]);
 
+  // Trocar de conversa ou receber a thread atualizada encerra a espera.
+  useEffect(() => {
+    setPendentes([]);
+  }, [mensagens.dados, abertaId]);
+
   /** Sobe o arquivo e manda pelo WhatsApp, usando o texto atual como legenda. */
   async function enviarArquivo(arquivo: Blob, nome: string) {
     if (!atual) return;
@@ -193,6 +202,9 @@ export function PainelConversas({ busca }: { busca: string }) {
   async function enviarTexto(conteudo: string) {
     if (!conteudo || !atual) return;
 
+    const provisoria = { id: `pendente-${crypto.randomUUID()}`, conteudo };
+    setPendentes((atuais) => [...atuais, provisoria]);
+
     // O servidor entrega no WhatsApp e grava o registro numa operação só —
     // assim a tela nunca mostra uma mensagem que não saiu.
     const ok = await executar(
@@ -200,7 +212,13 @@ export function PainelConversas({ busca }: { busca: string }) {
       'Mensagem enviada',
     );
 
-    if (ok) setPulso((n) => n + 1);
+    if (ok) {
+      setPulso((n) => n + 1);
+    } else {
+      // Falhou: a bolha some junto com o aviso de erro, senão a pessoa acha
+      // que a mensagem saiu.
+      setPendentes((atuais) => atuais.filter((p) => p.id !== provisoria.id));
+    }
   }
 
   async function alternarAtendimento() {
@@ -398,6 +416,15 @@ export function PainelConversas({ busca }: { busca: string }) {
                   ))
                 }
               </Conteudo>
+
+              {pendentes.map((p) => (
+                <div className="message ai pendente" key={p.id}>
+                  <small>VOCÊ</small>
+                  <p>{p.conteudo}</p>
+                  <time>enviando...</time>
+                </div>
+              ))}
+
               <div ref={fimDaThread} />
             </div>
 
