@@ -51,7 +51,7 @@ export function useDesempenhoCampanhas(clinicaId: string, pulso = 0) {
             .eq('clinica_id', clinicaId)
             .order('receita', { ascending: false })
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 }
 
@@ -72,7 +72,7 @@ export function PainelCampanhas() {
             .eq('clinica_id', clinicaId)
             .order('apelido')
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const conectados = (chips.dados ?? []).filter((c) => c.status === 'conectado').length;

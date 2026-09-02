@@ -51,7 +51,7 @@ export function PainelCRM() {
             .order('entrou_na_etapa_em', { ascending: false })
             .limit(300)
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const colunas = etapas.dados ?? [];

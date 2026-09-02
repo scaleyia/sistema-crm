@@ -63,7 +63,7 @@ export function PainelContatos({ ir }: { ir: (v: Vista) => void }) {
             .order('criado_em', { ascending: false })
             .limit(2000)
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const lista = useMemo(() => {

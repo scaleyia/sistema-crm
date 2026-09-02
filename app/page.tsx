@@ -142,7 +142,7 @@ function Painel() {
           };
         }
       : null,
-    [clinica?.id, vista, pulsoPendencias],
+    [clinica?.id, vista], [pulsoPendencias],
   );
 
   const naoLidas = pendencias.dados?.naoLidas ?? 0;

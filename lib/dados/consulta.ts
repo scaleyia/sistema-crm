@@ -24,15 +24,27 @@ export type Consulta<T> = {
  * recarga manual.
  *
  * `executar` é recriada a cada render pelo chamador, então quem manda no
- * disparo são as `dependencias` — a função vai para um ref e nunca entra no
- * array de efeito, o que evitaria um laço infinito.
+ * disparo são as chaves — a função vai para um ref e nunca entra no array de
+ * efeito, o que evitaria um laço infinito.
  *
  * Passar `null` em `executar` significa "ainda não dá para consultar" (por
  * exemplo, antes de a clínica ser conhecida): fica carregando sem ir à rede.
+ *
+ * Os dois arrays existem para separar duas coisas que parecem iguais:
+ *
+ *  - `chaves` identificam O QUE está sendo consultado (clínica, conversa,
+ *    dia). Quando mudam, o conteúdo anterior deixou de valer: a tela mostra o
+ *    esqueleto, senão exibiria os dados de outra conversa por um instante.
+ *
+ *  - `gatilhos` pedem a MESMA consulta de novo (tempo real, sondagem, ação que
+ *    acabou de gravar). Aqui o conteúdo continua válido, então ele permanece em
+ *    tela enquanto a nova resposta chega. Marcar "carregando" a cada evento de
+ *    tempo real fazia a tela piscar sem parar.
  */
 export function useConsulta<T>(
   executar: (() => PromiseLike<RespostaCrua>) | null,
-  dependencias: unknown[],
+  chaves: unknown[],
+  gatilhos: unknown[] = [],
 ): Consulta<T> {
   const [dados, setDados] = useState<T | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -42,6 +54,18 @@ export function useConsulta<T>(
   const executarRef = useRef(executar);
   executarRef.current = executar;
 
+  // O efeito precisa saber se já há algo em tela sem depender de `dados`, que
+  // o colocaria no array de dependências e o faria repetir a cada resposta.
+  const temDados = useRef(false);
+
+  // Chave mudou: o que está em tela é de outro alvo e não serve mais.
+  const assinatura = JSON.stringify(chaves);
+  const assinaturaAnterior = useRef(assinatura);
+  if (assinaturaAnterior.current !== assinatura) {
+    assinaturaAnterior.current = assinatura;
+    temDados.current = false;
+  }
+
   useEffect(() => {
     const fn = executarRef.current;
     if (!fn) {
@@ -50,7 +74,7 @@ export function useConsulta<T>(
     }
 
     let ativo = true;
-    setCarregando(true);
+    if (!temDados.current) setCarregando(true);
     setErro(null);
 
     Promise.resolve(fn()).then(
@@ -59,8 +83,10 @@ export function useConsulta<T>(
         if (resposta.error) {
           setErro(mensagemDeErro(resposta.error));
           setDados(null);
+          temDados.current = false;
         } else {
           setDados(resposta.data as T | null);
+          temDados.current = resposta.data != null;
         }
         setCarregando(false);
       },
@@ -75,7 +101,7 @@ export function useConsulta<T>(
       ativo = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...dependencias, gatilho]);
+  }, [...chaves, ...gatilhos, gatilho]);
 
   const recarregar = useCallback(() => setGatilho((n) => n + 1), []);
 

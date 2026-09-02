@@ -88,7 +88,7 @@ function Procedimentos() {
             .eq('ativo', true)
             .order('nome')
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const [nome, setNome] = useState('');
@@ -350,7 +350,7 @@ function Unidades() {
             .eq('ativa', true)
             .order('nome')
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const [nome, setNome] = useState('');
@@ -459,7 +459,7 @@ function Numeros() {
             .eq('ativo', true)
             .order('apelido')
       : null,
-    [clinicaId, pulso],
+    [clinicaId], [pulso],
   );
 
   const [apelido, setApelido] = useState('');

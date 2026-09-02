@@ -73,7 +73,7 @@ export function PainelAgenda() {
           return consulta;
         }
       : null,
-    [clinicaId, unidadeId, primeiroDia, ultimoDia, pulso],
+    [clinicaId, unidadeId, primeiroDia, ultimoDia], [pulso],
   );
 
   const porDia = new Map<string, number>();
@@ -96,7 +96,7 @@ export function PainelAgenda() {
           return consulta;
         }
       : null,
-    [clinicaId, unidadeId, dia, pulso],
+    [clinicaId, unidadeId, dia], [pulso],
   );
 
   const linhas = agenda.dados ?? [];

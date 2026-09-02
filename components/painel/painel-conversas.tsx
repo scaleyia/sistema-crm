@@ -87,7 +87,7 @@ export function PainelConversas({ busca }: { busca: string }) {
           return consulta;
         }
       : null,
-    [clinicaId, unidadeId, pulso],
+    [clinicaId, unidadeId], [pulso],
   );
 
   /**
@@ -176,7 +176,7 @@ export function PainelConversas({ busca }: { busca: string }) {
             .order('criado_em')
             .limit(200)
       : null,
-    [abertaId, pulso],
+    [abertaId], [pulso],
   );
 
   useEffect(() => {
@@ -188,16 +188,28 @@ export function PainelConversas({ busca }: { busca: string }) {
       .then(() => setPulso((n) => n + 1));
   }, [abertaId, abertaNaoLidas]);
 
-  // Rola para a mensagem mais recente sempre que a thread muda.
   const fimDaThread = useRef<HTMLDivElement>(null);
+  const ultimaVista = useRef<string | null>(null);
 
+  /**
+   * Rola até a mensagem mais recente — mas só quando ela de fato muda.
+   *
+   * A revalidação silenciosa devolve um array novo a cada ciclo, mesmo sem
+   * novidade. Reagir ao array jogaria a conversa para o fim a cada poucos
+   * segundos, arrancando de quem estivesse lendo o histórico.
+   */
   useEffect(() => {
+    const ultima = mensagens.dados?.[mensagens.dados.length - 1]?.id ?? null;
+    if (ultima === ultimaVista.current) return;
+    ultimaVista.current = ultima;
     fimDaThread.current?.scrollIntoView({ block: 'end' });
   }, [mensagens.dados]);
 
-  // Trocar de conversa ou receber a thread atualizada encerra a espera.
+  // Trocar de conversa ou receber a thread atualizada encerra a espera. O
+  // guarda evita trocar uma lista vazia por outra lista vazia a cada ciclo de
+  // revalidação, o que renderizaria a tela à toa.
   useEffect(() => {
-    setPendentes([]);
+    setPendentes((atuais) => (atuais.length ? [] : atuais));
   }, [mensagens.dados, abertaId]);
 
   /** Sobe o arquivo e manda pelo WhatsApp, usando o texto atual como legenda. */
