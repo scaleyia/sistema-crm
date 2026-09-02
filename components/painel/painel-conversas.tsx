@@ -6,11 +6,9 @@ import {
   Check,
   MessageCircle,
   PanelRight,
-  Phone,
   Plus,
   Sparkles,
   UserPlus,
-  X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/cliente';
 import { useConsulta } from '@/lib/dados/consulta';
@@ -20,12 +18,12 @@ import { whatsapp } from '@/lib/dados/api';
 import { subirMidia, tipoDoArquivo } from '@/lib/dados/midia';
 import { Composicao } from './composicao';
 import { Avatar } from './avatar';
+import { FichaContato } from './ficha-contato';
 import { MidiaMensagem } from './midia-mensagem';
 import {
   hora,
   ROTULO_ORIGEM,
   telefoneDigitos,
-  telefoneVisivel,
   tempoRelativo,
 } from '@/lib/dados/formato';
 import { Campo, Conteudo, EstadoVazio, Modal, useAcao, useAviso } from './base';
@@ -45,6 +43,10 @@ type LinhaCaixa = {
   interesse_principal: string | null;
   etapa_funil: string | null;
   foto_url: string | null;
+  etiquetas: string[] | null;
+  email: string | null;
+  observacoes: string | null;
+  situacao: string;
   status: string;
   criado_em?: string | null;
 };
@@ -63,7 +65,7 @@ export function PainelConversas({ busca }: { busca: string }) {
   const { avisar, alertar } = useAviso();
   const { executar, ocupado } = useAcao();
 
-  const [aba, setAba] = useState<'todas' | 'minhas' | 'nao-lidas'>('todas');
+  const [aba, setAba] = useState<'aguardando' | 'atendendo' | 'finalizadas'>('aguardando');
   const [conversaId, setConversaId] = useState<string | null>(null);
   const [enviandoMidia, setEnviandoMidia] = useState(false);
   // Mensagens já escritas e ainda a caminho do servidor. Sem isto a bolha só
@@ -150,16 +152,31 @@ export function PainelConversas({ busca }: { busca: string }) {
     };
   }, [clinicaId]);
 
-  const lista = (caixa.dados ?? []).filter((linha) => {
-    const alvo = `${linha.nome_completo ?? ''} ${linha.telefone ?? ''}`.toLowerCase();
-    if (busca && !alvo.includes(busca.toLowerCase())) return false;
-    if (aba === 'nao-lidas' && linha.nao_lidas <= 0) return false;
-    if (aba === 'minhas' && linha.assumida_por !== membroId) return false;
-    return true;
-  });
+  /**
+   * Em que estágio do atendimento cada conversa está.
+   *
+   * Sai do que já existe no banco: resolvida está finalizada; com atendente é
+   * atendimento humano; o resto aguarda alguém — inclusive as que a IA está
+   * respondendo, porque elas ainda podem precisar de gente.
+   */
+  const estagio = (linha: LinhaCaixa) =>
+    linha.status === 'resolvida'
+      ? 'finalizadas'
+      : linha.assumida_por
+        ? 'atendendo'
+        : 'aguardando';
 
-  const naoLidas = (caixa.dados ?? []).filter((l) => l.nao_lidas > 0).length;
-  const minhas = (caixa.dados ?? []).filter((l) => l.assumida_por === membroId).length;
+  const termo = busca.trim().toLowerCase();
+  const visiveis = (caixa.dados ?? []).filter((linha) =>
+    termo
+      ? `${linha.nome_completo ?? ''} ${linha.telefone ?? ''} ${(linha.etiquetas ?? []).join(' ')}`
+          .toLowerCase()
+          .includes(termo)
+      : true,
+  );
+
+  const lista = visiveis.filter((linha) => estagio(linha) === aba);
+  const quantos = (chave: string) => visiveis.filter((l) => estagio(l) === chave).length;
   // Só abre a conversa que a pessoa escolheu. Abrir a primeira sozinho faz
   // parecer que um atendimento foi assumido sem ninguém pedir.
   const atual = lista.find((l) => l.conversa_id === conversaId) ?? null;
@@ -267,6 +284,21 @@ export function PainelConversas({ busca }: { busca: string }) {
     }
   }
 
+  /** Tira a conversa da fila, ou devolve para ela. */
+  async function alternarConclusao() {
+    if (!atual) return;
+    const finalizando = atual.status !== 'resolvida';
+    await executar(
+      () =>
+        supabase
+          .from('conversas')
+          .update({ status: finalizando ? 'resolvida' : 'aberta' })
+          .eq('id', atual.conversa_id),
+      finalizando ? 'Atendimento finalizado' : 'Atendimento reaberto',
+      () => setPulso((n) => n + 1),
+    );
+  }
+
   async function alternarAtendimento() {
     if (!atual) return;
     const assumindo = atual.ia_ativa;
@@ -318,18 +350,22 @@ export function PainelConversas({ busca }: { busca: string }) {
       <div className="caixa-lista">
         <header className="lista-topo">
           <div className="list-tabs">
-            <button className={aba === 'todas' ? 'active' : ''} onClick={() => setAba('todas')}>
-              Todas
-            </button>
-            <button className={aba === 'minhas' ? 'active' : ''} onClick={() => setAba('minhas')}>
-              Minhas {minhas > 0 && <em>{minhas}</em>}
-            </button>
-            <button
-              className={aba === 'nao-lidas' ? 'active' : ''}
-              onClick={() => setAba('nao-lidas')}
-            >
-              Não lidas {naoLidas > 0 && <em>{naoLidas}</em>}
-            </button>
+            {(
+              [
+                ['aguardando', 'Aguardando'],
+                ['atendendo', 'Atendendo'],
+                ['finalizadas', 'Finalizadas'],
+              ] as const
+            ).map(([chave, rotulo]) => (
+              <button
+                key={chave}
+                className={aba === chave ? 'active' : ''}
+                onClick={() => setAba(chave)}
+              >
+                {rotulo}
+                {quantos(chave) > 0 && <em>{quantos(chave)}</em>}
+              </button>
+            ))}
           </div>
           <button
             className="botao-icone"
@@ -381,10 +417,14 @@ export function PainelConversas({ busca }: { busca: string }) {
                       </span>
 
                       <div className="item-selos">
+                        {(linha.etiquetas ?? []).slice(0, 2).map((etiqueta) => (
+                          <span className="selo selo-ouro" key={etiqueta}>
+                            {etiqueta}
+                          </span>
+                        ))}
                         {linha.origem && (
                           <span className="selo">{ROTULO_ORIGEM[linha.origem] ?? linha.origem}</span>
                         )}
-                        {linha.etapa_funil && <span className="selo selo-ouro">{linha.etapa_funil}</span>}
                         {linha.nao_lidas > 0 && <span className="selo-contador">{linha.nao_lidas}</span>}
                       </div>
                     </div>
@@ -417,6 +457,13 @@ export function PainelConversas({ busca }: { busca: string }) {
               <div className="chat-acoes">
                 <button className="secondary-btn" onClick={alternarAtendimento} disabled={ocupado}>
                   {atual.ia_ativa ? 'Assumir conversa' : 'Devolver para a IA'}
+                </button>
+                <button
+                  className="secondary-btn"
+                  onClick={alternarConclusao}
+                  disabled={ocupado}
+                >
+                  {atual.status === 'resolvida' ? 'Reabrir' : 'Finalizar'}
                 </button>
                 <button
                   className={`botao-icone ${contatoAberto ? 'ativo' : ''}`}
@@ -495,65 +542,12 @@ export function PainelConversas({ busca }: { busca: string }) {
       </div>
 
       {/* ---------------------------------------------------------- contato */}
-      {contatoAberto && (
-        <aside className="contact-info">
-          {atual && (
-            <>
-              <header>
-                <h3>Informações do contato</h3>
-                <button
-                  className="botao-icone"
-                  onClick={() => setContatoAberto(false)}
-                  aria-label="Fechar"
-                >
-                  <X size={15} />
-                </button>
-              </header>
-
-              <div className="contato-topo">
-                <Avatar
-                  nome={atual.nome_completo}
-                  foto={atual.foto_url}
-                  className="big-avatar"
-                />
-                <b>{atual.nome_completo ?? 'Sem nome'}</b>
-                <span>
-                  <Phone size={12} /> {telefoneVisivel(atual.telefone)}
-                </span>
-              </div>
-
-              <section>
-                <h4>Etiquetas</h4>
-                <div className="item-selos">
-                  {atual.origem && (
-                    <span className="selo">{ROTULO_ORIGEM[atual.origem] ?? atual.origem}</span>
-                  )}
-                  {atual.etapa_funil && <span className="selo selo-ouro">{atual.etapa_funil}</span>}
-                  {!atual.origem && !atual.etapa_funil && <span className="vazio-inline">—</span>}
-                </div>
-              </section>
-
-              <section>
-                <h4>Interesse</h4>
-                <p>{atual.interesse_principal ?? 'Não informado'}</p>
-              </section>
-
-              <section>
-                <h4>Última mensagem</h4>
-                <p>{tempoRelativo(atual.ultima_mensagem_em)}</p>
-              </section>
-
-              <section>
-                <h4>Atendimento</h4>
-                <p>
-                  {atual.ia_ativa
-                    ? 'A IA está respondendo automaticamente.'
-                    : `Assumida por ${atual.atendente ?? 'um atendente'}.`}
-                </p>
-              </section>
-            </>
-          )}
-        </aside>
+      {contatoAberto && atual && (
+        <FichaContato
+          contato={atual}
+          aoFechar={() => setContatoAberto(false)}
+          aoSalvar={() => setPulso((n) => n + 1)}
+        />
       )}
 
       <ModalNovaConversa
