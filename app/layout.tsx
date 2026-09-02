@@ -11,9 +11,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Impéria Esthétique — Inteligência para sua operação',
+  title: 'Painel de atendimento',
   description:
-    'Atendimento, agendamentos, CRM e reativação de clientes em um só lugar. Sua essência, nossa excelência.',
+    'Atendimento por WhatsApp, agenda, CRM e campanhas em um só lugar.',
   icons: { icon: '/favicon.svg' },
 };
 

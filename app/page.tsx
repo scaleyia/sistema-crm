@@ -71,6 +71,17 @@ function Painel() {
   const [menuUnidade, setMenuUnidade] = useState(false);
   const [menuPerfil, setMenuPerfil] = useState(false);
 
+  /**
+   * O título da aba é o nome do próprio negócio.
+   *
+   * O sistema atende vários clientes, então nenhum nome fixo serviria: quem
+   * abre o painel precisa reconhecer a aba como sua, não como a de outro.
+   */
+  useEffect(() => {
+    const nome = clinica?.nome_exibicao ?? clinica?.nome;
+    if (nome) document.title = nome;
+  }, [clinica]);
+
   // O tema fica no dispositivo. O padrão agora é o claro.
   useEffect(() => {
     const salvo = localStorage.getItem('cliniia:tema');

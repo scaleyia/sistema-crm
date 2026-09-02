@@ -168,6 +168,7 @@ export function Entrar() {
 
 export function Onboarding() {
   const { recarregar, sair, perfil } = useSessao();
+  const [seuNome, setSeuNome] = useState(perfil?.nome_completo ?? '');
   const [nome, setNome] = useState('');
   const [unidade, setUnidade] = useState('');
   const [erro, setErro] = useState<string | null>(null);
@@ -177,6 +178,19 @@ export function Onboarding() {
     evento.preventDefault();
     setErro(null);
     setEnviando(true);
+
+    // O nome da pessoa aparece no cumprimento do painel e assina o que ela
+    // responde. Quando o acesso é entregue pronto, ninguém o preencheu ainda.
+    const { error: erroPerfil } = await supabase
+      .from('perfis')
+      .update({ nome_completo: seuNome.trim() })
+      .eq('id', perfil?.id ?? '');
+
+    if (erroPerfil) {
+      setErro(mensagemDeErro(erroPerfil));
+      setEnviando(false);
+      return;
+    }
 
     const { error } = await supabase.rpc('criar_clinica_do_usuario', {
       p_nome: nome.trim(),
@@ -198,21 +212,29 @@ export function Onboarding() {
       <div className="portal-icone">
         <Building2 size={22} />
       </div>
-      <h1>Vamos abrir sua clínica</h1>
-      <p className="portal-sub">
-        Olá{perfil?.nome_completo ? `, ${perfil.nome_completo.split(' ')[0]}` : ''}! Só falta o nome
-        que aparece no painel.
-      </p>
+      <h1>Vamos configurar seu acesso</h1>
+      <p className="portal-sub">Duas informações e o painel está pronto para uso.</p>
 
       <form onSubmit={criar} className="portal-form">
         <label className="campo">
-          Nome da clínica
+          Seu nome
+          <input
+            value={seuNome}
+            onChange={(e) => setSeuNome(e.target.value)}
+            placeholder="Como você quer ser chamada"
+            autoComplete="name"
+            required
+            autoFocus
+          />
+        </label>
+
+        <label className="campo">
+          Nome da empresa
           <input
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Impéria Esthétique"
+            placeholder="Como seus clientes conhecem você"
             required
-            autoFocus
           />
         </label>
 
@@ -221,9 +243,9 @@ export function Onboarding() {
           <input
             value={unidade}
             onChange={(e) => setUnidade(e.target.value)}
-            placeholder="Unidade Jardins"
+            placeholder="Matriz"
           />
-          <small>Você pode cadastrar outras unidades depois.</small>
+          <small>Opcional. Você pode cadastrar outras depois.</small>
         </label>
 
         {erro && (
@@ -234,7 +256,7 @@ export function Onboarding() {
 
         <button className="primary-btn portal-envio" disabled={enviando}>
           {enviando && <Loader2 size={16} className="girando" />}
-          Criar clínica
+          Começar
         </button>
       </form>
 

@@ -1,8 +1,11 @@
 # CliniIA — CRM e atendimento para clínicas
 
-Painel de atendimento, agenda, CRM e campanhas de WhatsApp para clínicas de
-estética. Atendimento automático por IA, disparo em massa com rotação de
-números e relatórios de origem de receita.
+Painel multiempresa de atendimento por WhatsApp, com agenda, CRM e campanhas.
+Atendimento automático por IA, disparo em massa com rotação de números e
+relatórios de origem de receita.
+
+Cada empresa que entra cria a própria conta no primeiro acesso e enxerga
+apenas os próprios dados — o isolamento é feito por RLS em todas as tabelas.
 
 ## O que tem dentro
 
