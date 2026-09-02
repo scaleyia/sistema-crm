@@ -1915,6 +1915,7 @@ export type Database = {
           criado_em: string
           data_nascimento: string | null
           email: string | null
+          foto_url: string | null
           endereco: Json
           etiquetas: string[]
           excluido_em: string | null
@@ -1940,6 +1941,7 @@ export type Database = {
           criado_em?: string
           data_nascimento?: string | null
           email?: string | null
+          foto_url?: string | null
           endereco?: Json
           etiquetas?: string[]
           excluido_em?: string | null
@@ -1965,6 +1967,7 @@ export type Database = {
           criado_em?: string
           data_nascimento?: string | null
           email?: string | null
+          foto_url?: string | null
           endereco?: Json
           etiquetas?: string[]
           excluido_em?: string | null
@@ -2819,6 +2822,7 @@ export type Database = {
           p_tipo?: Database["public"]["Enums"]["tipo_conteudo_mensagem"]
           p_midia_url?: string | null
           p_enviada_pela_api?: boolean
+          p_foto?: string | null
         }
         Returns: Json
       }

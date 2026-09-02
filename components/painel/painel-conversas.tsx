@@ -19,10 +19,10 @@ import { garantirPaciente } from '@/lib/dados/catalogo';
 import { whatsapp } from '@/lib/dados/api';
 import { subirMidia, tipoDoArquivo } from '@/lib/dados/midia';
 import { Composicao } from './composicao';
+import { Avatar } from './avatar';
 import { MidiaMensagem } from './midia-mensagem';
 import {
   hora,
-  iniciais,
   ROTULO_ORIGEM,
   telefoneDigitos,
   telefoneVisivel,
@@ -44,6 +44,7 @@ type LinhaCaixa = {
   origem: string | null;
   interesse_principal: string | null;
   etapa_funil: string | null;
+  foto_url: string | null;
   status: string;
   criado_em?: string | null;
 };
@@ -355,7 +356,7 @@ export function PainelConversas({ busca }: { busca: string }) {
                     className={atual?.conversa_id === linha.conversa_id ? 'selected' : ''}
                     onClick={() => setConversaId(linha.conversa_id)}
                   >
-                    <div className="patient-avatar peach">{iniciais(linha.nome_completo)}</div>
+                    <Avatar nome={linha.nome_completo} foto={linha.foto_url} />
 
                     <div className="item-corpo">
                       <div className="item-linha">
@@ -400,7 +401,11 @@ export function PainelConversas({ busca }: { busca: string }) {
         {atual ? (
           <>
             <header className="chat-head">
-              <div className="patient-avatar sage">{iniciais(atual.nome_completo)}</div>
+              <Avatar
+                nome={atual.nome_completo}
+                foto={atual.foto_url}
+                className="patient-avatar sage"
+              />
               <div className="chat-quem">
                 <b>{atual.nome_completo ?? 'Sem nome'}</b>
                 <span>
@@ -506,7 +511,11 @@ export function PainelConversas({ busca }: { busca: string }) {
               </header>
 
               <div className="contato-topo">
-                <div className="big-avatar">{iniciais(atual.nome_completo)}</div>
+                <Avatar
+                  nome={atual.nome_completo}
+                  foto={atual.foto_url}
+                  className="big-avatar"
+                />
                 <b>{atual.nome_completo ?? 'Sem nome'}</b>
                 <span>
                   <Phone size={12} /> {telefoneVisivel(atual.telefone)}

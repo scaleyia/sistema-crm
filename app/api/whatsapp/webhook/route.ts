@@ -155,6 +155,10 @@ export async function POST(req: Request) {
       return Response.json({ ignorado: evento || 'evento sem nome' });
     }
 
+    // A foto de perfil vem no bloco do chat, não no da mensagem.
+    const chat = (dados.chat ?? {}) as Record<string, unknown>;
+    const foto = primeiroTexto(chat.image, chat.imagePreview) || null;
+
     const mensagem = lerMensagem(dados);
     if (!mensagem) return Response.json({ ignorado: 'payload sem mensagem' });
 
@@ -238,6 +242,7 @@ export async function POST(req: Request) {
       p_tipo: tipo as never,
       p_midia_url: midia,
       p_enviada_pela_api: Boolean(mensagem.wasSentByApi),
+      p_foto: foto,
     });
 
     if (error) {

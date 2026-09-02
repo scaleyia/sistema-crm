@@ -2677,3 +2677,19 @@ textarea.prompt {
 .message.pendente time {
   font-style: italic;
 }
+
+/* Foto do contato ocupando o lugar das iniciais. */
+.patient-avatar.com-foto,
+.big-avatar.com-foto {
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface-3);
+  border-color: var(--line);
+}
+
+.patient-avatar.com-foto img,
+.big-avatar.com-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

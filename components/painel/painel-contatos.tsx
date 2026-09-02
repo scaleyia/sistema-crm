@@ -8,7 +8,6 @@ import { useClinica } from '@/lib/dados/sessao';
 import { garantirPaciente, useProcedimentos } from '@/lib/dados/catalogo';
 import {
   dataCurta,
-  iniciais,
   ROTULO_ORIGEM,
   telefoneDigitos,
   telefoneVisivel,
@@ -16,6 +15,7 @@ import {
 } from '@/lib/dados/formato';
 import { Cabecalho, Campo, Conteudo, EstadoVazio, Modal, useAcao } from './base';
 import { baixarCsv } from '@/lib/dados/exportar';
+import { Avatar } from './avatar';
 import { ImportarContatos } from './importar-contatos';
 import type { Vista } from './navegacao';
 
@@ -27,6 +27,7 @@ type Contato = {
   origem: string;
   situacao: string;
   interesse_principal: string | null;
+  foto_url: string | null;
   ultimo_contato_em: string | null;
   ultima_visita_em: string | null;
   criado_em: string;
@@ -56,7 +57,7 @@ export function PainelContatos({ ir }: { ir: (v: Vista) => void }) {
           supabase
             .from('pacientes')
             .select(
-              'id, nome_completo, telefone, email, origem, situacao, interesse_principal, ultimo_contato_em, ultima_visita_em, criado_em',
+              'id, nome_completo, telefone, email, origem, situacao, interesse_principal, foto_url, ultimo_contato_em, ultima_visita_em, criado_em',
             )
             .eq('clinica_id', clinicaId)
             .is('excluido_em', null)
@@ -224,7 +225,7 @@ export function PainelContatos({ ir }: { ir: (v: Vista) => void }) {
                   {lista.map((contato) => (
                     <div key={contato.id}>
                       <span className="celula-nome">
-                        <i className="patient-avatar peach">{iniciais(contato.nome_completo)}</i>
+                        <Avatar nome={contato.nome_completo} foto={contato.foto_url} />
                         <b>{contato.nome_completo}</b>
                       </span>
                       <span>{telefoneVisivel(contato.telefone)}</span>
