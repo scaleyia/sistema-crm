@@ -90,6 +90,35 @@ function Painel() {
     }
   }
 
+  const [pulsoPendencias, setPulsoPendencias] = useState(0);
+
+  // O contador do menu precisa acompanhar a chegada de mensagem, e não só a
+  // troca de tela — senão o aviso de não lida aparece com minutos de atraso.
+  useEffect(() => {
+    if (!clinica) return;
+
+    const recarregar = () => setPulsoPendencias((n) => n + 1);
+
+    const canal = supabase
+      .channel(`pendencias:${clinica.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'conversas', filter: `clinica_id=eq.${clinica.id}` },
+        recarregar,
+      )
+      .subscribe();
+
+    const sondagem = setInterval(recarregar, 30000);
+    const aoVoltar = () => document.visibilityState === 'visible' && recarregar();
+    document.addEventListener('visibilitychange', aoVoltar);
+
+    return () => {
+      clearInterval(sondagem);
+      document.removeEventListener('visibilitychange', aoVoltar);
+      void supabase.removeChannel(canal);
+    };
+  }, [clinica]);
+
   // Contadores do menu: conversas não lidas e agendamentos a confirmar.
   const pendencias = useConsulta<{ naoLidas: number; aConfirmar: number }>(
     clinica
@@ -113,7 +142,7 @@ function Painel() {
           };
         }
       : null,
-    [clinica?.id, vista],
+    [clinica?.id, vista, pulsoPendencias],
   );
 
   const naoLidas = pendencias.dados?.naoLidas ?? 0;

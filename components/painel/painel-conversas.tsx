@@ -91,14 +91,26 @@ export function PainelConversas({ busca }: { busca: string }) {
   );
 
   /**
-   * Realtime: qualquer mensagem nova na clínica reordena a caixa de entrada e,
-   * se for da conversa aberta, entra na thread. Uma inscrição só para as duas
-   * listas — o `pulso` é o gatilho comum de recarga.
+   * Chegada de mensagem em tempo real.
+   *
+   * Três camadas, porque nenhuma sozinha é confiável:
+   *
+   *  1. Realtime do Postgres — o caminho rápido, quase instantâneo.
+   *  2. Uma sondagem lenta de reserva, para o caso de a conexão cair sem
+   *     avisar (troca de rede, aba suspensa pelo navegador, proxy que corta
+   *     WebSocket). Sem ela, uma queda silenciosa deixa o atendente cego.
+   *  3. Recarga ao voltar para a aba, que é quando a pessoa vai de fato olhar.
+   *
+   * As três só incrementam o mesmo gatilho de recarga, então repetição é
+   * inofensiva.
    */
   useEffect(() => {
     if (!clinicaId) return;
+
+    const recarregar = () => setPulso((n) => n + 1);
+
     const canal = supabase
-      .channel(`mensagens:${clinicaId}`)
+      .channel(`conversas:${clinicaId}`)
       .on(
         'postgres_changes',
         {
@@ -107,11 +119,32 @@ export function PainelConversas({ busca }: { busca: string }) {
           table: 'mensagens',
           filter: `clinica_id=eq.${clinicaId}`,
         },
-        () => setPulso((n) => n + 1),
+        recarregar,
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'conversas',
+          filter: `clinica_id=eq.${clinicaId}`,
+        },
+        recarregar,
       )
       .subscribe();
 
+    const sondagem = setInterval(recarregar, 20000);
+
+    const aoVoltar = () => {
+      if (document.visibilityState === 'visible') recarregar();
+    };
+    document.addEventListener('visibilitychange', aoVoltar);
+    window.addEventListener('focus', aoVoltar);
+
     return () => {
+      clearInterval(sondagem);
+      document.removeEventListener('visibilitychange', aoVoltar);
+      window.removeEventListener('focus', aoVoltar);
       void supabase.removeChannel(canal);
     };
   }, [clinicaId]);
