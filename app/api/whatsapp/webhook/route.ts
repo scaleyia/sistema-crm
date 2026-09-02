@@ -1,4 +1,6 @@
 import { anonimo, chaveWebhook, falha, segredo } from '@/lib/servidor/banco';
+import { baixarMidia } from '@/lib/servidor/uazapi';
+import { variavel } from '@/lib/servidor/ambiente';
 import { responderConversa } from '@/lib/servidor/assistente';
 
 /**
@@ -188,12 +190,41 @@ export async function POST(req: Request) {
       TIPOS[texto((mensagem as { mediaType?: unknown }).mediaType).toLowerCase()] ??
       TIPOS[texto((mensagem as { type?: unknown }).type).toLowerCase()] ??
       'texto';
-    const midia = primeiroTexto(mensagem.fileURL) || null;
 
-    // Sem texto e sem mídia o banco recusaria a linha; o rótulo preserva o
-    // registro em vez de deixar um buraco na conversa.
+    const idExterno = primeiroTexto(mensagem.messageid, mensagem.id) || null;
+    let midia = primeiroTexto(mensagem.fileURL) || null;
+    let transcricao: string | null = null;
+
+    // O evento avisa que há mídia, mas não traz o arquivo: é preciso pedi-lo.
+    if (tipo !== 'texto' && !midia && idExterno) {
+      const { data: credencial } = await servidor.rpc('wa_credencial_por_instancia', {
+        p_segredo: chave,
+        p_instancia: instancia,
+      });
+      const token = credencial?.[0]?.token;
+
+      if (token) {
+        try {
+          const chaveOpenai = await variavel('OPENAI_API_KEY').catch(() => undefined);
+          const arquivo = await baixarMidia(token, idExterno, {
+            transcrever: tipo === 'audio',
+            chaveOpenai,
+          });
+          midia = arquivo.fileURL ?? null;
+          transcricao = arquivo.transcription?.trim() || null;
+        } catch (e) {
+          // Sem o arquivo a mensagem ainda precisa existir na conversa.
+          console.error('[webhook] mídia não baixada:', e instanceof Error ? e.message : e);
+        }
+      }
+    }
+
+    // A transcrição vira o texto da mensagem: aparece sob o áudio e, melhor
+    // ainda, na prévia da caixa de entrada — "quero saber o preço" diz muito
+    // mais do que "Áudio".
     const conteudo =
       primeiroTexto(mensagem.text, mensagem.content) ||
+      transcricao ||
       (midia ? null : (ROTULO_SEM_TEXTO[tipo] ?? ROTULO_SEM_TEXTO.texto));
 
     const { data, error } = await servidor.rpc('wa_registrar_mensagem', {
@@ -203,7 +234,7 @@ export async function POST(req: Request) {
       p_nome: primeiroTexto(mensagem.senderName) || null,
       p_conteudo: conteudo,
       p_de_mim: Boolean(mensagem.fromMe),
-      p_id_externo: primeiroTexto(mensagem.messageid, mensagem.id) || null,
+      p_id_externo: idExterno,
       p_tipo: tipo as never,
       p_midia_url: midia,
       p_enviada_pela_api: Boolean(mensagem.wasSentByApi),

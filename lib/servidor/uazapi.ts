@@ -226,6 +226,45 @@ export async function listarMensagensDoDisparo(
   return resposta?.messages ?? [];
 }
 
+/**
+ * Busca o arquivo de uma mensagem de mídia.
+ *
+ * A mídia recebida não chega no evento do webhook — ele traz só o aviso de que
+ * existe. Este endpoint materializa o arquivo e devolve uma URL. Para áudio
+ * pedimos MP3, que toca em qualquer navegador (o OGG do WhatsApp não toca no
+ * Safari).
+ *
+ * `transcrever` só é pedido quando há chave da OpenAI: sem ela a chamada
+ * inteira poderia falhar e o áudio ficaria sem nem a URL.
+ */
+export async function baixarMidia(
+  token: string,
+  idMensagem: string,
+  opcoes?: { transcrever?: boolean; chaveOpenai?: string },
+): Promise<{ fileURL?: string; mimetype?: string; transcription?: string }> {
+  const corpo: Record<string, unknown> = {
+    id: idMensagem,
+    return_link: true,
+    generate_mp3: true,
+  };
+
+  if (opcoes?.transcrever && opcoes.chaveOpenai) {
+    corpo.transcribe = true;
+    corpo.openai_apikey = opcoes.chaveOpenai;
+  }
+
+  try {
+    return await chamar('/message/download', { corpo, token });
+  } catch (e) {
+    // Transcrição é acessório; sem ela ainda queremos o arquivo.
+    if (!corpo.transcribe) throw e;
+    return chamar('/message/download', {
+      corpo: { id: idMensagem, return_link: true, generate_mp3: true },
+      token,
+    });
+  }
+}
+
 /** Filtra quem realmente tem WhatsApp antes de gastar disparo. */
 export async function checarNumeros(
   token: string,
